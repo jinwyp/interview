@@ -21,7 +21,10 @@
 
 
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+const readline = require('readline');
+const stream = require('stream');
+
 
 const filePath = path.join(__dirname, 'interview.csv');
 
@@ -187,6 +190,8 @@ function getLargestAbsoluteIncrease( sourceData) {
 
 
 
+
+
 exports.useStream = function(){
     let file = fs.createReadStream(filePath);
     let sourceDataBuffer = Buffer.from('');
@@ -215,7 +220,115 @@ exports.useStream = function(){
     });
 
     file.on("error", function(error) {
-        console.log("Open file error。", error.message);
+        console.log("Open file error。", error);
+    });
+};
+
+
+
+
+
+
+exports.useStreamReadline = function(){
+    let instream = fs.createReadStream(filePath);
+    let outstream = new stream;
+
+    let tempObject = {};
+
+    let tempResult = {
+        maxIncreaseName : '',
+        maxIncrease     : 0,
+        maxDecreaseName : '',
+        maxDecrease     : 0,
+        maxBalanceName : '',
+        maxBalance   : 0
+    };
+
+
+    let rl = readline.createInterface({
+        input  : instream,
+        output : outstream
+    });
+
+    rl.on('line', function(line) {
+
+        let oneStock = line.split(',');
+        let oneStockName = oneStock[0];
+        let oneStockValue = oneStock[3];
+        let oneStockChange = oneStock[4];
+
+        if (oneStock[0] !== 'Name'){
+
+            // Filter valid numbers
+            if (oneStockValue && oneStockValue !== true && !isNaN(Number(oneStockValue))){
+
+                if (typeof tempObject[oneStockName] === 'undefined'){
+                    tempObject[oneStockName] = {
+                        historyList      : [],
+                        absoluteIncrease : 0,
+                        absoluteDecrease : 0,
+                        balance          : 0
+                    };
+
+                    tempObject[oneStockName].historyList.push({
+                        name : oneStock[0],
+                        date : oneStock[1],
+                        notes : oneStock[2],
+                        value : Number(oneStock[3]),
+                        change : oneStock[4],
+                    });
+
+                    if (oneStockChange === 'INCREASED'){
+                        tempObject[oneStockName].absoluteIncrease = Number(oneStockValue)
+                    }else if (oneStockChange === 'DECREASED'){
+                        tempObject[oneStockName].absoluteDecrease = Number(oneStockValue)
+                    }else if (oneStockChange === 'NEW'){
+                        tempObject[oneStockName].balance = Number(oneStockValue)
+                    }
+
+                }else{
+
+
+                    if (oneStockChange=== 'INCREASED'){
+                        tempObject[oneStockName].absoluteIncrease = tempObject[oneStockName].absoluteIncrease + Number(oneStockValue);
+                        tempObject[oneStockName].balance = tempObject[oneStockName].balance + Number(oneStockValue);
+
+                        if (tempResult.maxIncrease < tempObject[oneStockName].absoluteIncrease){
+                            tempResult.maxIncrease = tempObject[oneStockName].absoluteIncrease;
+                            tempResult.maxIncreaseName = oneStockName;
+                        }
+
+                    }else if (oneStockChange=== 'DECREASED'){
+                        tempObject[oneStockName].absoluteDecrease = tempObject[oneStockName].absoluteDecrease + Number(oneStockValue);
+                        tempObject[oneStockName].balance = tempObject[oneStockName].balance - Number(oneStockValue);
+
+                        if (tempResult.maxDecrease < tempObject[oneStockName].absoluteDecrease){
+                            tempResult.maxDecrease = tempObject[oneStockName].absoluteDecrease;
+                            tempResult.maxDecreaseName = oneStockName;
+                        }
+
+                    }else if (oneStockChange=== 'NEW'){
+                        tempObject[oneStockName].balance = tempObject[oneStockName].balance + Number(oneStockValue);
+                    }
+
+
+                    if (tempResult.maxBalance < tempObject[oneStockName].balance){
+                        tempResult.maxBalance = tempObject[oneStockName].balance;
+                        tempResult.maxBalanceName = oneStockName;
+                    }
+
+                }
+            }
+
+
+        }
+
+    });
+
+    rl.on('close', function() {
+        console.log('---------- Log Message Stream with readline ----------');
+        // console.log(tempObject);
+        console.log(tempResult);
     });
 };
 

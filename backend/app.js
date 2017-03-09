@@ -7,3 +7,4 @@ const csv = require('./interview/interview.js');
 
 csv.run();
 csv.useStream();
+csv.useStreamReadline();
