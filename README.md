@@ -4,6 +4,7 @@ collections for interview
 
 ### How to start
 
-run command ``` npm start ```
+
+Enter "backend" folder and run command ```  npm start ```
 
 
