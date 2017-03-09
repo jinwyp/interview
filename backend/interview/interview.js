@@ -21,8 +21,9 @@
 
 
 const fs = require('fs');
+const path = require('path')
 
-const filePath = './interview.csv';
+const filePath = path.join(__dirname, 'interview.csv');
 
 
 /**
@@ -70,7 +71,7 @@ function arrayToObject (titleArray, sourceArray){
 
 
 /**
- * sort by date
+ * Sort by date
  *
  */
 function sortByDate (sourceData){
@@ -114,7 +115,7 @@ function sortByDate (sourceData){
 
 
 /**
- * find largest absolute increase and decrease stock
+ * Find largest absolute increase and decrease stock
  *
  */
 function getLargestAbsoluteIncrease( sourceData) {
@@ -187,17 +188,47 @@ function getLargestAbsoluteIncrease( sourceData) {
 
 
 exports.useStream = function(){
+    let file = fs.createReadStream(filePath);
+    let sourceDataBuffer = Buffer.from('');
 
+
+    file.on("data", function(data) {
+
+        file.pause();
+        sourceDataBuffer = Buffer.concat([sourceDataBuffer, data]);
+        file.resume();
+
+    });
+
+    file.on("end", function() {
+
+        console.log('---------- Log Message Stream----------');
+
+        let fileDataArray = sourceDataBuffer.toString('utf8').split(/(?:\n|\r\n|\r)/g);
+        const dataTableTitle = fileDataArray.shift().split(',');
+
+        let stockDataList = arrayToObject(dataTableTitle, fileDataArray);
+        let stockDataList2 = sortByDate(stockDataList);
+
+        let result = getLargestAbsoluteIncrease(stockDataList2);
+        console.log(result)
+    });
+
+    file.on("error", function(error) {
+        console.log("Open file error。", error.message);
+    });
 };
 
 
 
 
-module.exports = function(){
+
+exports.run = function(){
 
     fs.readFile(filePath, function (err, data) {
         if (err) {
-            throw err;
+            console.log(err);
+            return
         }
 
         console.log('---------- Log Message ----------');

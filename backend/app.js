@@ -5,4 +5,5 @@
 
 const csv = require('./interview/interview.js');
 
-csv();
+csv.run();
+csv.useStream();
