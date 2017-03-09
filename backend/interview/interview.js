@@ -54,7 +54,7 @@ function arrayToObject (titleArray, sourceArray){
                     if (title === 'Date'){
                         stock[title] = oneRowDataArray[titleIndex].split('/').join('-');
                     }
-                })
+                });
 
                 // console.log('one row data : ', oneRowDataArray)
                 stockList.push(stock)
@@ -114,7 +114,7 @@ function sortByDate (sourceData){
 
 
 /**
- * find largest absolute increase stock
+ * find largest absolute increase and decrease stock
  *
  */
 function getLargestAbsoluteIncrease( sourceData) {
@@ -139,7 +139,7 @@ function getLargestAbsoluteIncrease( sourceData) {
                 absoluteIncrease : 0,
                 absoluteDecrease : 0,
                 balance :  0
-            }
+            };
 
 
             if (item.Change === 'INCREASED'){
@@ -152,9 +152,9 @@ function getLargestAbsoluteIncrease( sourceData) {
         }else{
 
             if (item.Change === 'INCREASED'){
-                tempObject[item.Name].absoluteIncrease = tempObject[item.Name].absoluteIncrease + Number(item.Value)
+                tempObject[item.Name].absoluteIncrease = tempObject[item.Name].absoluteIncrease + Number(item.Value);
 
-                tempObject[item.Name].balance = tempObject[item.Name].balance + Number(item.Value)
+                tempObject[item.Name].balance = tempObject[item.Name].balance + Number(item.Value);
 
                 if (tempResult.maxIncrease < tempObject[item.Name].absoluteIncrease){
                     tempResult.maxIncrease = tempObject[item.Name].absoluteIncrease;
@@ -162,9 +162,9 @@ function getLargestAbsoluteIncrease( sourceData) {
                 }
 
             }else if (item.Change === 'DECREASED'){
-                tempObject[item.Name].absoluteDecrease = tempObject[item.Name].absoluteDecrease + Number(item.Value)
+                tempObject[item.Name].absoluteDecrease = tempObject[item.Name].absoluteDecrease + Number(item.Value);
 
-                tempObject[item.Name].balance = tempObject[item.Name].balance - Number(item.Value)
+                tempObject[item.Name].balance = tempObject[item.Name].balance - Number(item.Value);
 
                 if (tempResult.maxDecrease < tempObject[item.Name].absoluteDecrease){
                     tempResult.maxDecrease = tempObject[item.Name].absoluteDecrease;
@@ -179,10 +179,18 @@ function getLargestAbsoluteIncrease( sourceData) {
             }
 
         }
-    })
+    });
 
     return tempResult;
 }
+
+
+
+exports.useStream = function(){
+
+};
+
+
 
 
 module.exports = function(){
@@ -197,14 +205,17 @@ module.exports = function(){
         let fileDataArray = data.toString('utf8').split(/(?:\n|\r\n|\r)/g);
         const dataTableTitle = fileDataArray.shift().split(',');
 
-
-        let stockDataList = arrayToObject(dataTableTitle, fileDataArray)
-        let stockDataList2 = sortByDate(stockDataList)
+        let stockDataList = arrayToObject(dataTableTitle, fileDataArray);
+        let stockDataList2 = sortByDate(stockDataList);
 
         let result = getLargestAbsoluteIncrease(stockDataList2);
         console.log(result)
 
     });
-}
+};
+
+
+
+
 
 

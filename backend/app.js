@@ -3,4 +3,6 @@
  */
 
 
-require('./interview/interview.js')();
+const csv = require('./interview/interview.js');
+
+csv();
