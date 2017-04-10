@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .box{
+            width: 100%;
+            background-color: #00d6b2;
+            display: flex;
+            flex-direction: row;
+            flex-wrap : nowrap;
+        }
+
+        .left{
+            word-break: break-all;
+            word-wrap: break-word;
+            height: 200px;
+            border: #ff2540 solid 1px;
+            flex-shrink : 0;
+            text-overflow:ellipsis;
+        }
+
+        .right{
+            height: 300px;
+            border: #2c28ff solid 1px;
+            flex-shrink: 100;
+        }
+
+        .container {
+            display: -webkit-flex;
+        }
+
+        .container>div:first-child{
+            white-space:nowrap;
+            -webkit-order:1;
+            -webkit-flex: 0 1 auto; /*important*/
+            text-overflow: ellipsis;
+            overflow:hidden;
+            min-width:0; /* new algorithm overrides the width calculation */
+        }
+
+        .container > div:last-child {
+            -webkit-flex: 1;
+            -webkit-order:2;
+            background: red;
+            -webkit-flex:1 0 auto; /*important*/
+        }
+        .container > div:first-child:hover{
+            white-space:normal;
+        }
+
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <div>foo barfoo bar</div>
+    <div>foo bar</div>
+</div>
+
+<div class="container">
+    <div>foo barfoo barfoo barfoo barfoo barfoo barfoo bar
+        foo barfoo barfoo barfoo barfoo barfoo barfoo bar
+        foo barfoo barfoo barfoo barfoo barfoo barfoo bar</div>
+    <div>foo bar</div>
+</div>
+<div class="container">
+    <div>foo barfoo bar</div>
+    <div>foo bar</div>
+</div>
+
+<div class="container">
+    <div>foo barfoo barfoo barfoo barfoo barfoo barfoo bar
+        foo barfoo barfoo barfoo barfoo barfoo barfoo bar
+        foo barfoo barfoo barfoo barfoo barfoo barfoo bar</div>
+    <div>foo bar</div>
+</div><div class="container">
+    <div>foo barfoo bar</div>
+    <div>foo bar</div>
+</div>
+
+</body>
+</html>
